@@ -1,17 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-
-class CustomUser(AbstractUser):
-    """User model"""
-    email = models.EmailField(unique=True)
-    age = models.PositiveIntegerField(blank=True, null=True)
-    identifiants = models.CharField(max_length=100, blank=True)
-    can_be_contacted = models.BooleanField(default=False)
-    can_data_be_shared = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.username
-
+from django.contrib.auth import get_user_model
+CustomUser = get_user_model()
 class Project(models.Model):
     """Project model"""
     TYPE_CHOICES = [
@@ -26,12 +15,14 @@ class Project(models.Model):
     last_modification = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     type = models.CharField(max_length=100, choices=TYPE_CHOICES)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
 
 class Issue(models.Model):
     """Issue model"""
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='author', default=1)
     title = models.CharField(max_length=100)
     description = models.TextField()
     status = models.CharField(max_length=100)

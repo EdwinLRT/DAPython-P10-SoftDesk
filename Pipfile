@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 django = "*"
 djangorestframework = "*"
+argon2-cffi = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 
