@@ -2,13 +2,15 @@ from rest_framework import serializers
 from .models import CustomUser
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+
     class Meta:
         model = CustomUser
         fields = ['id', 'username', 'email', 'password', 'age', 'can_be_contacted', 'can_data_be_shared']
 
-
-    # def to_representation(self, instance):
-    #     # Exclure le champ 'password' lors de la sérialisation des données
-    #     data = super().to_representation(instance)
-    #     data.pop('password', None)
-    #     return data
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = CustomUser.objects.create(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
