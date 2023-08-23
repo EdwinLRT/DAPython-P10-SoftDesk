@@ -2,10 +2,13 @@ import uuid
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
+from django.conf import settings
+
 
 CustomUser = get_user_model()
 
 from django.utils.text import slugify
+
 
 class Project(models.Model):
     """Project model"""
@@ -15,13 +18,14 @@ class Project(models.Model):
         ('iOS', 'iOS'),
         ('Android', 'Android'),
     ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     slug = models.SlugField(unique=True, blank=True)  # Champ de slug
     name = models.CharField(max_length=100)
     description = models.TextField()
     creation_date = models.DateTimeField(auto_now_add=True)
     last_modification = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE,  related_name='author_projects')
     type = models.CharField(max_length=100, choices=TYPE_CHOICES)
     active = models.BooleanField(default=True)
 
@@ -33,11 +37,11 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+
 class Issue(models.Model):
     """Issue model"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    slug = models.SlugField(unique=True, default='temp')  # Champ de slug
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='author', default=1)
+    id = models.AutoField(primary_key=True)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='author_issues')
     title = models.CharField(max_length=100)
     description = models.TextField()
     status = models.CharField(max_length=100)
@@ -46,33 +50,30 @@ class Issue(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     last_modification = models.DateTimeField(auto_now=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    assigned_to = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.slug = slugify(self.title)  # Génère un slug basé sur le titre
-        super().save(*args, **kwargs)
+    comments = models.ManyToManyField('self', symmetrical=False, related_name='related_issue_comments')
 
     def __str__(self):
         return self.title
 
-# Le reste de vos modèles reste inchangé.
 
 class Comment(models.Model):
     """Comment model"""
     content = models.TextField()
     creation_date = models.DateTimeField(auto_now_add=True)
     last_modification = models.DateTimeField(auto_now=True)
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='related_comments')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE,  related_name='author_comments')
 
     def __str__(self):
         return self.content
 
+
 class Contributor(models.Model):
     """Contributor model"""
     project = models.ManyToManyField('Project', related_name='contributors')
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
+
+

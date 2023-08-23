@@ -14,3 +14,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+    def validate_age(self, value):
+        """
+        Vérifie si l'âge de l'utilisateur est supérieur ou égal à 15 ans.
+        """
+        if value < 15:
+            raise serializers.ValidationError("Vous devez avoir au moins 15 ans pour vous inscrire.")
+        return value

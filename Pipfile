@@ -8,6 +8,7 @@ django = "*"
 djangorestframework = "*"
 argon2-cffi = "*"
 djangorestframework-simplejwt = "*"
+drf-nested-routers = "*"
 
 [dev-packages]
 
