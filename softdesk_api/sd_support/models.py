@@ -25,7 +25,7 @@ class Project(models.Model):
     description = models.TextField()
     creation_date = models.DateTimeField(auto_now_add=True)
     last_modification = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE,  related_name='author_projects')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE,  related_name='author_projects')
     type = models.CharField(max_length=100, choices=TYPE_CHOICES)
     active = models.BooleanField(default=True)
 
@@ -69,11 +69,6 @@ class Comment(models.Model):
 
 
 class Contributor(models.Model):
-    """Contributor model"""
-    project = models.ManyToManyField('Project', related_name='contributors')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.user.username
-
-
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    is_author = models.BooleanField(default=False)

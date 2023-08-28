@@ -1,15 +1,17 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, StringRelatedField, SlugRelatedField
 from rest_framework import serializers
-from sd_support.models import Project, Issue, Comment
+from sd_support.models import Project, Issue, Comment, Contributor
 from django.shortcuts import get_object_or_404
+from sd_accounts.models import CustomUser
+
 
 
 class ProjectSerializer(ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+    author = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
         model = Project
-        fields = ['id', 'slug', 'name', 'description', 'owner', 'creation_date', 'last_modification', 'type', 'active']
+        fields = ['id', 'slug', 'name', 'description', 'author', 'creation_date', 'last_modification', 'type', 'active']
 
 
 class IssueSerializer(ModelSerializer):
@@ -34,3 +36,13 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'content', 'creation_date', 'last_modification', 'author']
+
+
+class ContributorSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(slug_field='username', queryset=CustomUser.objects.all())
+    project = serializers.SlugRelatedField(slug_field='slug', queryset=Project.objects.all(), required=False)
+
+    class Meta:
+        model = Contributor
+        fields = '__all__'
+        read_only_fields = ('project', 'role', 'id')
