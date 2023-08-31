@@ -4,10 +4,7 @@ from django.contrib.auth import get_user_model
 from django.utils.text import slugify
 from django.conf import settings
 
-
 CustomUser = get_user_model()
-
-from django.utils.text import slugify
 
 
 class Project(models.Model):
@@ -25,7 +22,7 @@ class Project(models.Model):
     description = models.TextField()
     creation_date = models.DateTimeField(auto_now_add=True)
     last_modification = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE,  related_name='author_projects')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='author_projects')
     type = models.CharField(max_length=100, choices=TYPE_CHOICES)
     active = models.BooleanField(default=True)
 
@@ -62,13 +59,19 @@ class Comment(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     last_modification = models.DateTimeField(auto_now=True)
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='related_comments')
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE,  related_name='author_comments')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='author_comments')
 
     def __str__(self):
         return self.content
 
 
 class Contributor(models.Model):
+    """Contributor model"""
+    PERMISSION_CHOICES = [
+        ("Creator", "Creator"),
+        ("Contributor", "Contributor"),
+    ]
+
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    is_author = models.BooleanField(default=False)
+    permission = models.CharField(max_length=20, choices=PERMISSION_CHOICES, default='Contributor')

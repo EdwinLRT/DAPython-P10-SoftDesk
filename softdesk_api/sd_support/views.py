@@ -46,8 +46,8 @@ class ProjectViewset(ModelViewSet):
             unique_slug = self._generate_unique_slug(project_name)
             try:
                 project = serializer.save(author=self.request.user, slug=unique_slug)
-                contributor = Contributor.objects.create(user=self.request.user, project=project, is_author=True)
-                print("New Contributor:", contributor)
+                contributor = Contributor.objects.create(user=self.request.user, project=project, permission='Creator')
+                print("Project author set : ", contributor)
             except IntegrityError:
                 # In the rare event that a slug clash occurs despite our unique slug generation,
                 # you might want to handle that case here. E.g., log the error, send a notification, etc.
@@ -59,7 +59,7 @@ class ProjectViewset(ModelViewSet):
         if self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [IsProjectAuthor]
         else:
-            permission_classes = [IsProjectAuthor | IsAuthenticated]
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
     def _generate_unique_slug(self, project_name):
@@ -104,24 +104,22 @@ class ContributorViewset(ModelViewSet):
             raise ValidationError("L'utilisateur est déjà un contributeur de ce projet.")
 
         # Sauvegarde du nouvel enregistrement
-        serializer.save(user=user, project=project)
-
+        serializer.save(user=user, project=project, permission='Contributor')
 
     def get_permissions(self):
-        print(f"Action: {self.action}")
-        user = self.request.user.username
-        if self.action in ['create', 'list']:
+        if self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsProjectAuthor]
+        elif self.action in ['list', 'retrieve', 'create']:
             permission_classes = [IsProjectAuthor | IsContributor]
         else:
             permission_classes = [IsProjectAuthor]
         return [permission() for permission in permission_classes]
 
-
 class IssueViewset(ModelViewSet):
     """ View to manage Issues of a project """
     serializer_class = IssueSerializer
     pagination_class = CustomPagination
-    lookup_field = 'project__slug'
+    lookup_field = 'id'
     permission_classes = [IsProjectAuthor, IsContributor]
 
     def get_queryset(self):
@@ -136,10 +134,9 @@ class IssueViewset(ModelViewSet):
     def perform_create(self, serializer):
         project = get_object_or_404(Project, slug=self.kwargs["project_slug"])
         serializer.save(author=self.request.user, project=project)
+
     def get_permissions(self):
-        print(f"Action: {self.action}")
-        user = self.request.user.username
-        if self.action in ['create', 'list']:
+        if self.action in ['create', 'list', 'retrieve']:
             permission_classes = [IsProjectAuthor | IsContributor]
         else:
             permission_classes = [IsProjectAuthor]
@@ -149,11 +146,12 @@ class IssueViewset(ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = CustomPagination
+    permission_classes = [IsProjectAuthor | IsContributor]
 
     def get_issue(self):
         project_slug = self.kwargs["project_slug"]
-        issue_id = self.kwargs["issue_pk"]
-        print(project_slug, issue_id)
+        issue_id = self.kwargs["issue_id"]
+        print("Issue id : ", issue_id)
         return get_object_or_404(Issue, project__slug=project_slug, id=issue_id)
 
     def get_queryset(self):
@@ -162,6 +160,11 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         issue = self.get_issue()
-        serializer.save(author=self.request.user, issue=issue)
 
-    permission_classes = [IsAuthenticated]
+        serializer.save(author=self.request.user, issue=issue)
+    def get_permissions(self):
+        if self.action in ['create', 'list', 'retrieve']:
+            permission_classes = [IsProjectAuthor | IsContributor]
+        else:
+            permission_classes = [IsProjectAuthor]
+        return [permission() for permission in permission_classes]
