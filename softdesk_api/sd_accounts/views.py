@@ -22,18 +22,18 @@ class IsOwnerOrAdmin(permissions.BasePermission):
 class CustomUserViewset(ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
+    permission_classes = [IsOwnerOrAdmin]
 
     def perform_create(self, serializer):
         serializer.save()
 
     def list(self, request, *args, **kwargs):
-        #if request.user.is_admin:
-        queryset = self.queryset
-        #else:
-        #    queryset = CustomUser.objects.filter(id=request.user.id)
+        if request.user.is_admin:
+            queryset = self.queryset
+        else:
+            queryset = CustomUser.objects.filter(id=request.user.id)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
