@@ -49,8 +49,6 @@ class ProjectViewset(ModelViewSet):
                 contributor = Contributor.objects.create(user=self.request.user, project=project, permission='Creator')
                 print("Project author set : ", contributor)
             except IntegrityError:
-                # In the rare event that a slug clash occurs despite our unique slug generation,
-                # you might want to handle that case here. E.g., log the error, send a notification, etc.
                 raise ValidationError("Erreur lors de la création du projet. Veuillez réessayer.")
         else:
             raise ValidationError("Vous devez être connecté pour créer un projet.")
@@ -82,15 +80,10 @@ class ContributorViewset(ModelViewSet):
         return Contributor.objects.filter(project__slug=self.kwargs["project_slug"])
 
     def perform_create(self, serializer):
-        # Récupération du projet via le slug
         project = get_object_or_404(Project, slug=self.kwargs["project_slug"])
-
-        # Vérifier si l'utilisateur actuel est l'auteur ou un contributeur du projet
         if not Contributor.objects.filter(user=self.request.user,
                                           project=project).exists() and project.author != self.request.user:
             raise ValidationError("Vous n'avez pas la permission d'ajouter des contributeurs.")
-
-        # Récupération de l'utilisateur via le nom d'utilisateur
         username = self.request.data.get('user')
         if not username:
             raise ValidationError("Le champ 'username' est requis.")
@@ -99,11 +92,9 @@ class ContributorViewset(ModelViewSet):
         except CustomUser.DoesNotExist:
             raise ValidationError("L'utilisateur spécifié n'existe pas.")
 
-        # Vérifier si l'utilisateur est déjà un contributeur du projet
         if Contributor.objects.filter(user=user, project=project).exists():
             raise ValidationError("L'utilisateur est déjà un contributeur de ce projet.")
 
-        # Sauvegarde du nouvel enregistrement
         serializer.save(user=user, project=project, permission='Contributor')
 
     def get_permissions(self):
@@ -114,6 +105,7 @@ class ContributorViewset(ModelViewSet):
         else:
             permission_classes = [IsProjectAuthor]
         return [permission() for permission in permission_classes]
+
 
 class IssueViewset(ModelViewSet):
     """ View to manage Issues of a project """
@@ -162,6 +154,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         issue = self.get_issue()
 
         serializer.save(author=self.request.user, issue=issue)
+
     def get_permissions(self):
         if self.action in ['create', 'list', 'retrieve']:
             permission_classes = [IsProjectAuthor | IsContributor]

@@ -12,7 +12,6 @@ class IsOwnerOrAdmin(permissions.BasePermission):
     Allow user to delete his own account or admin to delete any account
     """
     def has_object_permission(self, request, view, obj):
-        # if user is admin, he can delete any account
         if request.user.is_admin:
             return True
         # user can delete his own account
