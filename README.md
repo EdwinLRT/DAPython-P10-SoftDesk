@@ -94,6 +94,11 @@ Afin de faciliter l'accès à l'API et la mise à jour des différents élément
 
 Vous pouvez retrouver une capture d'écran de l'état des endpoints au 05/09/2023 ci-dessous.   
 
+![endpoints of sd-authentication](https://i.ibb.co/VD0pSQz/Capture-d-e-cran-2023-09-05-a-11-11-15.png)
+![endpoints of sd-support](https://i.ibb.co/fGfgHtm/Capture-d-e-cran-2023-09-05-a-11-11-27.png)
+
+
+
 
 
 ## Informations complémentaires 
