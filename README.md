@@ -20,8 +20,7 @@ Dans votre terminal, naviguer vers le dossier souhaité.
 ###### • Récupération du projet
 
 ```
-git clone https://github.com/EdwinLRT/P10-SoftDesk
-
+git clone https://github.com/EdwinLRT/DAPython-P10-SoftDesk
 ```
 
 ###### • Activer l'environnement virtuel
@@ -47,7 +46,7 @@ Dans le terminal, naviguer vers le dossier souhaité.
 ###### • Récupération du projet
 
 ```
-git clone https://github.com/EdwinLRT/P10-SoftDesk
+git clone https://github.com/EdwinLRT/DAPython-P10-SoftDesk
 
 ```
 
