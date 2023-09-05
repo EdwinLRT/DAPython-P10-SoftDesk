@@ -88,6 +88,14 @@ Il est possible de naviguer dans l'API avec différents outils :
 -   l'outil de commandes  [cURL](https://curl.se/)  ;
 -   l'interface intégrée Django REST framework à l'adresse  [http://127.0.0.1:8000/](http://127.0.0.1:8000/)  (adresse par défaut, retrouvez les end-points ci-dessous).
 
+# Documentation & Endpoints
+
+Afin de faciliter l'accès à l'API et la mise à jour des différents éléments de la documentation le choix a été fait d'utiliser la librairie drf-yasg Swagger accessible via ce lien une fois l'API lancée.  http://127.0.0.1:8000/swagger/
+
+Vous pouvez retrouver une capture d'écran de l'état des endpoints au 05/09/2023 ci-dessous.   
+
+
+
 ## Informations complémentaires 
 
 Utilisateurs : 
