@@ -26,7 +26,7 @@ git clone https://github.com/EdwinLRT/DAPython-P10-SoftDesk
 ###### • Activer l'environnement virtuel
 
 ```
-cd OC_SOFTDESK
+cd softdesk_api
 python -m venv env 
 env\Scripts\activate
 
@@ -53,7 +53,7 @@ git clone https://github.com/EdwinLRT/DAPython-P10-SoftDesk
 ###### • Activer l'environnement virtuel
 
 ```
-cd OC_SOFTDESK
+cd softdesk_api
 python3 -m venv env 
 source env/bin/activate
 
