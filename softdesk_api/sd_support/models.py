@@ -1,8 +1,8 @@
 import uuid
-from django.db import models
+
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.utils.text import slugify
-from django.conf import settings
 
 CustomUser = get_user_model()
 

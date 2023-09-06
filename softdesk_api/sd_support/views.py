@@ -77,7 +77,10 @@ class ContributorViewset(ModelViewSet):
     permission_classes = [IsProjectAuthor, IsContributor]
 
     def get_queryset(self):
-        return Contributor.objects.filter(project__slug=self.kwargs["project_slug"])
+        project_slug = self.kwargs.get("project_slug", None)
+        if project_slug is None:
+            return Contributor.objects.none()
+        return Contributor.objects.filter(project__slug=project_slug)
 
     def perform_create(self, serializer):
         project = get_object_or_404(Project, slug=self.kwargs["project_slug"])
@@ -115,12 +118,12 @@ class IssueViewset(ModelViewSet):
     permission_classes = [IsProjectAuthor, IsContributor]
 
     def get_queryset(self):
-        project_slug = self.kwargs["project_slug"]
+        project_slug = self.kwargs.get("project_slug", None)
         return Issue.objects.filter(project__slug=project_slug)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context["project_slug"] = self.kwargs["project_slug"]
+        context["project_slug"] = self.kwargs.get("project_slug", None)
         return context
 
     def perform_create(self, serializer):
@@ -141,8 +144,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsProjectAuthor | IsContributor]
 
     def get_issue(self):
-        project_slug = self.kwargs["project_slug"]
-        issue_id = self.kwargs["issue_id"]
+        project_slug = self.kwargs.get("project_slug", None)
+        issue_id = self.kwargs.get("issue_id", None)
+        if project_slug is None or issue_id is None:
+            return None
         print("Issue id : ", issue_id)
         return get_object_or_404(Issue, project__slug=project_slug, id=issue_id)
 

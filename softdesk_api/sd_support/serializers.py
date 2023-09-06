@@ -1,9 +1,8 @@
-from rest_framework.serializers import ModelSerializer, StringRelatedField, SlugRelatedField
-from rest_framework import serializers
-from sd_support.models import Project, Issue, Comment, Contributor
 from django.shortcuts import get_object_or_404
+from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 from sd_accounts.models import CustomUser
-
+from sd_support.models import Project, Issue, Comment, Contributor
 
 
 class ProjectSerializer(ModelSerializer):

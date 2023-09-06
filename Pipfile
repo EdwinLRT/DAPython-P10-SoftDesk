@@ -9,6 +9,7 @@ djangorestframework = "*"
 argon2-cffi = "*"
 djangorestframework-simplejwt = "*"
 drf-nested-routers = "*"
+drf-yasg = "*"
 
 [dev-packages]
 
