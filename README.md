@@ -102,8 +102,14 @@ Vous pouvez retrouver une capture d'écran de l'état des endpoints au 05/09/202
 
 ## Informations complémentaires 
 
-Utilisateurs : 
+| Usernames | Password | Auteur du project |  Contributeur sur  |  
+| ------ | ------ | ------ | ------ |   
+|Edwin | Password1 | Axonaut |  Evolizz |
+| Constance | Password1 | Evolizz | -- |
+| Victor | Password1 | -- | Evolizz |
+| Alexandre | Password1 | -- | Axonaut & Evolizz |  
+| Quentin | Password1 | -- | --|  
 
-Liste des endpoints : 
+## Réponses de l'API
 
-Divers : 
+Toutes les images sont situés dans le dossier API-pictures
