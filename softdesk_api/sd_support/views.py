@@ -26,9 +26,9 @@ class ProjectViewset(ModelViewSet):
     lookup_field = 'slug'
     pagination_class = CustomPagination
     permission_classes = [IsProjectAuthor]
-
     def get_queryset(self):
         queryset = Project.objects.all()
+        print("Queryset : ", queryset)
         active = self.request.query_params.get('active', None)
         if active is not None:
             active = active.lower() in ('true', 'yes', '1')
@@ -69,6 +69,15 @@ class ProjectViewset(ModelViewSet):
             unique_slug = f"{slug}-{num}"
             num += 1
         return unique_slug
+
+    def destroy(self, request, *args, **kwargs):
+        print("kwargs:", self.kwargs)
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Http404:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ContributorViewset(ModelViewSet):

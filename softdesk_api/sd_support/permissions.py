@@ -9,13 +9,15 @@ class IsProjectAuthor(BasePermission):
 
     def has_permission(self, request, view):
         print("IsProjectAuthor has_permission")
-        project_slug = view.kwargs.get('project_slug')
+        project_slug = view.kwargs.get('project_slug') or view.kwargs.get('slug')
+        print("project_slug: ", project_slug)
         project = get_object_or_404(Project, slug=project_slug)
         contributor = get_object_or_404(Contributor, user=request.user, project=project)
 
         if contributor.permission == 'Creator':
             print("IsProjectAuthor has_permission: True")
             return True
+        print("IsProjectAuthor has_permission: False")
         return False
 
     def has_object_permission(self, request, view, obj):
@@ -30,7 +32,7 @@ class IsContributor(BasePermission):
 
     def has_permission(self, request, view):
         print("IsContributor has_permission")
-        project_slug = view.kwargs.get('project_slug')
+        project_slug = view.kwargs.get('project_slug') or view.kwargs.get('slug')
         project = get_object_or_404(Project, slug=project_slug)
 
         is_contributor = Contributor.objects.filter(user=request.user, project=project).exists()
