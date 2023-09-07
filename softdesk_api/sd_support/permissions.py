@@ -24,6 +24,18 @@ class IsProjectAuthor(BasePermission):
         print("IsProjectAuthor has_object_permission")
         if isinstance(obj, Project):
             return Contributor.objects.filter(user=request.user, project=obj, permission='Creator').exists()
+
+        elif isinstance(obj, Issue):
+            print("Obj is Issue")
+            project = obj.project
+            return Contributor.objects.filter(user=request.user, project=project).exists()
+
+        elif isinstance(obj, Comment):
+            print("Obj is Comment")
+            issue = obj.issue
+            project = issue.project
+            return Contributor.objects.filter(user=request.user, project=project).exists()
+
         return False
 
 
@@ -58,8 +70,8 @@ class IsContributor(BasePermission):
 
         elif isinstance(obj, Comment):
             print("Obj is Comment")
-            issue = obj.issue  # Suppose que Comment a un champ 'issue' lié à l'Issue
-            project = issue.project  # On obtient le projet via l'Issue
+            issue = obj.issue
+            project = issue.project
             return Contributor.objects.filter(user=request.user, project=project).exists()
 
         return False
